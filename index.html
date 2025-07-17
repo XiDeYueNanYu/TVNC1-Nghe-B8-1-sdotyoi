@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Thêm viewport để tối ưu hóa di động -->
+    <title>越南语听力练习</title>
+    <style>
+        body { 
+            font-family: Arial, sans-serif; 
+            text-align: center; 
+            margin: 0; 
+            padding-bottom: 300px; /* Mặc định cho màn hình lớn */
+            background-color: #f7fbf3;
+        }
+        #gameContainer {
+            display: block;
+            min-height: calc(100vh - 150px); /* Đảm bảo nội dung chiếm đủ chiều cao màn hình */
+        }
+        #infoBox { 
+            width: 95%; 
+            max-width: 700px;
+            min-height: 100px; 
+            margin: 0 auto; 
+            border: 1px solid #ccc; 
+            background: #68838B; 
+            color: #D2B48C; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: clamp(40px, 5vw, 60px);
+            font-weight: bold;
+        }
+        #contactBox { 
+            width: 90%; 
+            max-width: 700px;
+            min-height: 25px; 
+            margin: 0px auto; 
+            border: 1px solid #ccc; 
+            background: #68838B; 
+            color: #D2B48C; 
+            display: flex; 
+            align-items: center; 
+            justify-content: left; 
+            padding-left: 20px;
+            font-size: clamp(16px, 2vw, 20px); 
+            font-weight: bold;
+        }
+        #instructionBox { 
+            width: 90%; 
+            max-width: 700px;
+            min-height: 25px; 
+            margin: 0px auto; 
+            border: 1px solid #ccc; 
+            background: #68838B; 
+            color: #D2B48C; 
+            display: flex; 
+            align-items: center; 
+            justify-content: left; 
+            padding-left: 20px;
+            font-size: clamp(16px, 2vw, 20px); 
+            font-weight: bold;
+        }
+        #controls { 
+            position: fixed; /* Cố định ở cuối màn hình */
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 800px; /* Giới hạn chiều rộng tối đa */
+            background: #68838B; 
+            padding: 10px 0; 
+            box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2); 
+            z-index: 1000; 
+        }
+        #controls div {
+            margin: 5px 0; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        button { 
+            padding: 8px 8px; 
+            margin: 0 5px; 
+            cursor: pointer; 
+            border: 3px solid #5d757d; 
+            background: #0f1314; 
+            color: #fffbef; 
+            font-size: 28px; 
+            border-radius: 5px; 
+        }
+        #sentenceNumber { 
+            width: 50px; 
+            padding: 10px; 
+            text-align: center; 
+            border: 3px solid #68838B; 
+            background: #FFAD5B; 
+            color: #000; 
+            border-radius: 10px; 
+            font-size: 16px; 
+            -moz-appearance: textfield; 
+        }
+        #sentenceNumber::-webkit-inner-spin-button, 
+        #sentenceNumber::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+        #sentenceNumber:disabled { 
+            background: #eee; 
+        }
+        .disabled { 
+            cursor: not-allowed; 
+            pointer-events: none; 
+        }
+        .active-mode { 
+            border: 4px solid orange; 
+        }
+        #indicator { 
+            width: 95%;
+                        max-width: 700px; 
+            min-height: 50px; 
+            margin: 10px auto; 
+                        padding: 5px;
+            border: 3px solid #734A2E; 
+            background: #ffffe0; 
+            border-radius: 10px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+        }
+        #optionsContainer {
+            width: 100%;
+            max-width: 700px;
+            margin: 10px auto;
+        }
+        .optionBtn {
+            width: 95%; 
+            max-width: 700px;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #734A2E;
+            background: #ffffff; /*E6EDD9*/
+            color: #000;
+            font-size: 30px;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .optionBtn:hover {
+            background: #D2E4C4;
+        }
+        .correct {
+            background: #B7D7AA !important;
+        }
+        .wrong {
+            background: #CE6D5E !important;
+        }
+        #score { 
+            display: none; 
+            width: 100%;
+            max-width: 700px;
+            margin: 10px auto; 
+            color: #FF6820; 
+            font-size: 30px; 
+            text-align: center;
+        }
+        #wrongSentences { 
+            display: none; 
+            width: 95%; 
+            max-width: 700px; 
+            margin: 10px auto; 
+            padding: 10px; 
+            border: 2px solid #CE6D5E; 
+            background: #FFF0F0; 
+            color: #CE6D5E; 
+            font-size: 30px; 
+            text-align: left; 
+            border-radius: 5px; 
+        }
+        #results { 
+            display: none; 
+            width: 95%;
+            max-width: 700px;        
+            margin: 10px auto; 
+            padding: 10px; 
+            border: 2px solid #734A2E; 
+            background: #fffbef; 
+            color: #000; 
+            font-size: 30px; 
+            text-align: left; 
+            border-radius: 5px; 
+            white-space: pre-line;
+        }
+
+        /* Media query cho thiết bị di động */
+        @media (max-width: 768px) {
+            body {
+                padding-bottom: 200px; /* Giảm padding-bottom cho điện thoại */
+            }
+            #controls {
+                padding: 5px 0; /* Giảm padding */
+            }
+            button {
+                padding: 6px 6px; /* Giảm kích thước nút */
+                font-size: 20px; /* Giảm kích thước chữ */
+            }
+            #sentenceNumber {
+                width: 40px; /* Giảm chiều rộng */
+                padding: 8px; /* Giảm padding */
+                font-size: 14px; /* Giảm kích thước chữ */
+            }
+            .optionBtn {
+                font-size: 20px; /* Giảm kích thước chữ cho đáp án */
+                padding: 8px; /* Giảm padding */
+            }
+            #infoBox {
+                font-size: clamp(30px, 4vw, 40px); /* Giảm kích thước chữ */
+            }
+            #contactBox, #instructionBox {
+                font-size: clamp(14px, 2vw, 16px); /* Giảm kích thước chữ */
+            }
+            #indicator {
+                min-height: 40px; /* Giảm chiều cao tối thiểu */
+            }
+            #results, #wrongSentences, #score {
+                font-size: 24px; /* Giảm kích thước chữ */
+                                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <div id="infoBox">习得越南语<br>听力练习</div>
+        <div id="contactBox">讲师-阮玉煌 | Weixin：XiDeYueNanYu</div>
+        <div id="instructionBox">选择与播放内容相符的选项</div>
+        <div id="indicator"></div>
+        <div id="optionsContainer"></div>
+        <div id="results"></div>
+        <div id="score">0/0</div>
+        <div id="wrongSentences"></div>
+    </div>
+    <div id="controls">
+        <div>
+            <button id="freeModeBtn" class="active-mode">自由模式</button>
+            <button id="testModeBtn">作业模式</button>
+        </div>
+        <div>
+            <button id="autoContinueBtn">自动继续</button>
+            <button id="showHideBtn">显示-隐藏</button>
+        </div>
+        <div>
+            <button id="prevBtn">◀</button>
+            <input type="text" id="sentenceNumber" inputmode="numeric" pattern="[0-9]*">
+            <button id="nextBtn">▶</button>
+            <button id="replayBtn">再听一遍</button>
+        </div>
+    </div>
+    <audio id="mainAudio" src="audio.mp3"></audio>
+    <audio id="correctAudio" src="Dung.mp3"></audio>
+    <audio id="wrongAudio" src="Sai.mp3"></audio>
+
+    <script>
+        const audio = document.getElementById('mainAudio');
+        const correctAudio = document.getElementById('correctAudio');
+        const wrongAudio = document.getElementById('wrongAudio');
+        const indicator = document.getElementById('indicator');
+        const sentenceNumber = document.getElementById('sentenceNumber');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const replayBtn = document.getElementById('replayBtn');
+        const freeModeBtn = document.getElementById('freeModeBtn');
+        const testModeBtn = document.getElementById('testModeBtn');
+        const autoContinueBtn = document.getElementById('autoContinueBtn');
+        const showHideBtn = document.getElementById('showHideBtn');
+        const scoreDisplay = document.getElementById('score');
+        const wrongSentencesDisplay = document.getElementById('wrongSentences');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const resultsDisplay = document.getElementById('results');
+
+        const buttons = [prevBtn, nextBtn, replayBtn, freeModeBtn, testModeBtn, autoContinueBtn, showHideBtn];
+
+const sentences = [
+    {
+        "audioFile": "audio.mp3",
+        "start": 0.513583,
+        "end": 2.943583,
+        "correctAnswer": "Tôi hiếm khi ra ngoài vào buổi tối.",
+        "translation": "我很少在晚上外出。",
+        "options": [
+            "Tôi hiểm khi ra ngoài vào buổi tối.",
+            "Tôi hiếm khi ra ngoài vào buổi tôi.",
+            "Tôi hiếm khi ra ngòai vào buổi tối.",
+            "Tôi hiếm khi ra ngoài vào buổi tối."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 3.293583,
+        "end": 5.953583,
+        "correctAnswer": "Anh ấy hiếm khi nói chuyện với hàng xóm.",
+        "translation": "他很少和邻居说话。",
+        "options": [
+            "Anh ấy hiếm khi nói chuyện với hàng xốm.",
+            "Anh ấy hiếm khi nối chuyện với hàng xóm.",
+            "Anh ấy hiểm khi nói chuyện với hàng xóm.",
+            "Anh ấy hiếm khi nói chuyện với hàng xóm."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 6.503583,
+        "end": 8.623583,
+        "correctAnswer": "Cô ấy hiếm khi ăn đồ ngọt.",
+        "translation": "她很少吃甜食。",
+        "options": [
+            "Cô ấy hiếm khi ăn đồ ngọt.",
+            "Cô ấy hiểm khi ăn đồ ngọt.",
+            "Cô ấy hếm khi ăn đồ ngọt.",
+            "Cô ấy hếm khi ẳn đồ ngọt."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 9.203583,
+        "end": 11.163583,
+        "correctAnswer": "Tôi ít khi đi du lịch xa.",
+        "translation": "我很少去远处旅游。",
+        "options": [
+            "Tôi ít khi đi du lịch xa.",
+            "Tôi ít khi đi du lịc xa.",
+            "Tôi ịt khi đi du lịch xa.",
+            "Tôi ít khi đi ru lịch xa."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 11.613583,
+        "end": 13.913583,
+        "correctAnswer": "Cô ấy ít khi dùng mạng xã hội.",
+        "translation": "她很少使用社交网络。",
+        "options": [
+            "Cô ấy ịt khi dùng mạng xã hội.",
+            "Cô ấy ít khi dùng màng xã hội.",
+            "Cô ấy ít khi dùng mạng xã hội.",
+            "Cô ấy ít khi dung mạng xã hội."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 14.363583,
+        "end": 16.743583,
+        "correctAnswer": "Anh ta ít khi đến lớp đúng giờ.",
+        "translation": "他很少准时到教室。",
+        "options": [
+            "Anh ta ịt khi đến lớp đúng giờ.",
+            "Anh ta ít khi đến lớp đũng giờ.",
+            "Anh ta ít khi đến lớ đúng giờ.",
+            "Anh ta ít khi đến lớp đúng giờ."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 17.203583,
+        "end": 19.253583,
+        "correctAnswer": "Tôi thỉnh thoảng đi bộ buổi sáng.",
+        "translation": "我有时早上去散步。",
+        "options": [
+            "Tôi thỉnh thoảng đi bộ buổi sáng.",
+            "Tôi thỉnh thoảng đi bô buổi sáng.",
+            "Tôi thỉnh thoảng đi bộ buổi sảng.",
+            "Tôi thỉnh thoảng đi bô buổi sán."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 19.743583,
+        "end": 22.093583,
+        "correctAnswer": "Anh ấy thỉnh thoảng gọi điện cho tôi.",
+        "translation": "他有时打电话给我。",
+        "options": [
+            "Anh ấy thỉnh thoảng gọi điện cho tôi.",
+            "Anh ấy thỉnh thoảng gọi điên cho tôi.",
+            "Anh ấy thỉnh thoảng gọi điện cho tui.",
+            "Anh ấy thỉnh thoảng gỏi điện cho tôi."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 22.543583,
+        "end": 24.853583,
+        "correctAnswer": "Chúng tôi thỉnh thoảng ăn ở nhà hàng.",
+        "translation": "我们偶尔在饭店吃饭。",
+        "options": [
+            "Chúng tôi thỉnh thoảng ăn ở nhà hằng.",
+            "Chúng tôi thỉnh thoảng ăn ở nhá hàng.",
+            "Chúng tôi thỉnh thoảng ăn ở nhà hàng.",
+            "Chúng tôi thỉnh thoảng ẳn ở nhà hàng."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 25.403583,
+        "end": 27.773583,
+        "correctAnswer": "Tôi đôi khi thức khuya để làm việc.",
+        "translation": "我有时熬夜工作。",
+        "options": [
+            "Tôi đôi khi thức khuya để làm việc.",
+            "Tôi đôi khi thức khuya để làm việt.",
+            "Tôi đoi khi thức khuya để làm việc.",
+            "Tôi đôi khi thước khuya để làm việc."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 28.163583,
+        "end": 30.053583,
+        "correctAnswer": "Anh ấy đôi khi đến muộn.",
+        "translation": "他有时候会迟到。",
+        "options": [
+            "Anh ấy đôi khi đến muộn.",
+            "Anh ấy đôi khi đến mượn.",
+            "Anh ấy đồi khi đến muộn.",
+            "Anh ấy đôi khi đến muôn."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 30.653583,
+        "end": 32.543583,
+        "correctAnswer": "Chúng tôi đôi khi tranh cãi.",
+        "translation": "我们有时会争论。",
+        "options": [
+            "Chúng tôi đôi khi trăn cãi.",
+            "Chúng tôi đôi khi tranh cãi.",
+            "Chúng tôi đôi khi chanh cãi.",
+            "Chúng tôi đôi khi tranh cai."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 33.103583,
+        "end": 35.323583,
+        "correctAnswer": "Tôi hay uống cà phê vào buổi sáng.",
+        "translation": "我早上经常喝咖啡。",
+        "options": [
+            "Tôi hay uống cà phê vào buổi sảng.",
+            "Tôi hay uống cà phê vào buổi sáng.",
+            "Tôi hay uồng cà phê vào buổi sáng.",
+            "Tôi hay uống cà phe vào buổi sáng."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 35.953583,
+        "end": 38.083583,
+        "correctAnswer": "Anh ấy hay quên mang chìa khóa.",
+        "translation": "他常常忘记带钥匙。",
+        "options": [
+            "Anh ấy hay quên mang chìa khóa.",
+            "Anh ấy hay quên mang chía khóa.",
+            "Anh ấy hay quên mang chìa khỏa.",
+            "Anh ấy hay quên mang chìa khoá."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 38.543583,
+        "end": 40.493583,
+        "correctAnswer": "Cô ấy hay giúp đỡ người khác.",
+        "translation": "她经常帮助别人。",
+        "options": [
+            "Cô ấy hay giúp đỡ người khác.",
+            "Cô ấy hay giúp đở người khác.",
+            "Cô ấy hay súp đỡ người khác.",
+            "Cô ấy hay giúp đỡ ngươi khác."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 41.113583,
+        "end": 42.543583,
+        "correctAnswer": "Tôi thường dậy sớm.",
+        "translation": "我通常起得很早。",
+        "options": [
+            "Tôi thường dậy sớm.",
+            "Tôi thường dạy sớm.",
+            "Tôi thường dậy sỡm.",
+            "Tôi thường zậy sớm."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 43.113583,
+        "end": 45.323583,
+        "correctAnswer": "Cô ấy thường đọc sách trước khi ngủ.",
+        "translation": "她通常睡前看书。",
+        "options": [
+            "Cô ấy thường đọc sách trước khi ngủ.",
+            "Cô ấy thường đọc sách trước khỉ ngủ.",
+            "Cô ấy thường đọc sách trước khi ngũ.",
+            "Cô ấy thường đọ sách trước khi ngủ."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 45.813583,
+        "end": 48.133583,
+        "correctAnswer": "Anh ta thường đi làm bằng xe máy.",
+        "translation": "他通常骑摩托车上班。",
+        "options": [
+            "Anh ta thường đi làm bằng xê máy.",
+            "Anh ta thường đi làm bằng xe máy.",
+            "Anh ta thường đi làm băng xe máy.",
+            "Anh ta thường đi làm bằng xe mãy."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 48.763583,
+        "end": 50.963583,
+        "correctAnswer": "Tôi thường tập thể dục mỗi sáng.",
+        "translation": "我每天早上通常锻炼身体。",
+        "options": [
+            "Tôi thường tập thể dục mỗi sáng.",
+            "Tôi thường tập thể zục mỗi sáng.",
+            "Tôi thường tạp thể dục mỗi sáng.",
+            "Tôi thường tập thể dụt mỗi sáng."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 51.423583,
+        "end": 53.893583,
+        "correctAnswer": "Tôi thường thường ăn sáng ở nhà.",
+        "translation": "我通常都在家吃早餐。",
+        "options": [
+            "Tôi thường thường ăn sáng ở nhà.",
+            "Tôi thường thường ăn sang ở nhà.",
+            "Tôi thường thường ăn sáng ở nhá.",
+            "Tôi thương thường ăn sáng ở nhà."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 54.403583,
+        "end": 56.973583,
+        "correctAnswer": "Anh ta thường thường mua sắm vào thứ bảy.",
+        "translation": "他通常在星期六购物。",
+        "options": [
+            "Anh ta thường thường mua sắm vào thứ bảy.",
+            "Anh ta thương thường mua sắm vào thứ bảy.",
+            "Anh ta thường thường mua xắm vào thứ bảy.",
+            "Anh ta thường thường mua sắm vào thứ bãy."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 57.403583,
+        "end": 59.973583,
+        "correctAnswer": "Chúng tôi thường thường nói chuyện qua điện thoại.",
+        "translation": "我们经常通过电话聊天。",
+        "options": [
+            "Chúng tôi thường thường nói chuyện qua điện thoại.",
+            "Chúng tôi thường thường nói chuyển qua điện thoại.",
+            "Chúng tôi thương thường nói chuyện qua điện thoại.",
+            "Chúng tôi thường thường nói chuyện qua diên thoại."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 60.393583,
+        "end": 63.073583,
+        "correctAnswer": "Tôi thường thường đi ngủ lúc 11 giờ.",
+        "translation": "我通常十一点睡觉。",
+        "options": [
+            "Tôi thường thường đi ngủ lúc 11 giờ.",
+            "Tôi thường thường đi ngũ lúc 11 giờ.",
+            "Tôi thương thường đi ngủ lúc 11 giờ.",
+            "Tôi thường thường đi ngủ lúc 11 dờ."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 63.483583,
+        "end": 65.393583,
+        "correctAnswer": "Tôi luôn cố gắng hoàn thành công việc đúng hạn.",
+        "translation": "我总是努力按时完成工作。",
+        "options": [
+            "Tôi luôn cố gắng hoàn thành công việc đúng hạng.",
+            "Tôi luôn cố gắng hoàng thành công việc đúng hạn.",
+            "Tôi luôn cố gắng hoàn thành công việc đúng hạn.",
+            "Tôi luôn cố gắng hoàn thanh công việc đúng hạn."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 66.033583,
+        "end": 67.873583,
+        "correctAnswer": "Anh ấy luôn giữ lời hứa.",
+        "translation": "他总是守信用。",
+        "options": [
+            "Anh ấy luôn dữ lời hứa.",
+            "Anh ấy luôn giữ lời hứa.",
+            "Anh ấy luon giữ lời hứa.",
+            "Anh ấy luôn giữ lòi hứa."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 68.423583,
+        "end": 70.163583,
+        "correctAnswer": "Chúng tôi luôn tôn trọng nhau.",
+        "translation": "我们总是互相尊重。",
+        "options": [
+            "Chúng tôi luon tôn trọng nhau.",
+            "Chúng tôi luôn tôn trộng nhau.",
+            "Chúng tôi luôn tông trộng nhau.",
+            "Chúng tôi luôn tôn trọng nhau."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 70.683583,
+        "end": 72.823583,
+        "correctAnswer": "Tôi luôn mang theo điện thoại.",
+        "translation": "我总是带着手机。",
+        "options": [
+            "Tôi luôn mang theo điện thoại.",
+            "Tôi luôn mang theo điển thoại.",
+            "Tôi luôn mang theo điện thoai.",
+            "Tôi luôn man theo điện thoại."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 73.533583,
+        "end": 75.653583,
+        "correctAnswer": "Tôi luôn luôn yêu quý gia đình mình.",
+        "translation": "我始终珍爱自己的家庭。",
+        "options": [
+            "Tôi luôn luôn yêu quý gia đình mình.",
+            "Tôi luôn luôn yêu quý ra đình mình.",
+            "Tôi luon luôn yêu quý da đình mình.",
+            "Tôi luôn luôn yêu quý da đình mình."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 76.253583,
+        "end": 78.373583,
+        "correctAnswer": "Chúng tôi luôn luôn ủng hộ nhau.",
+        "translation": "我们始终支持彼此。",
+        "options": [
+            "Chúng tôi luôn luôn ủng hộ nhau.",
+            "Chúng tôi luôn luôn ủng hô nhau.",
+            "Chúng tôi luôn luon ủng hộ nhau.",
+            "Chúng tôi luôn luôn ụng hộ nhau."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 78.923583,
+        "end": 81.463583,
+        "correctAnswer": "Tôi luôn luôn tin vào chính mình.",
+        "translation": "我始终相信自己。",
+        "options": [
+            "Tôi luôn luôn tin vào chính mình.",
+            "Tôi luôn luôn tin vào chĩnh mình.",
+            "Tôi luon luôn tin vào chính mình.",
+            "Tôi luôn luôn tin vào chín mình."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 82.073583,
+        "end": 84.163583,
+        "correctAnswer": "Anh ta đi đến công ty lúc tám giờ.",
+        "translation": "他八点去公司。",
+        "options": [
+            "Anh ta đi đến công ty lúc tám giờ.",
+            "Anh ta đi đến kông ty lúc tám giờ.",
+            "Anh ta đi đến kông ty lúc tám dờ.",
+            "Anh ta đi đên công ty lúc tám giờ."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 84.743583,
+        "end": 87.703583,
+        "correctAnswer": "Tôi đi đến trường bằng xe máy.",
+        "translation": "我骑摩托车去学校。",
+        "options": [
+            "Tôi đi đến trường bằng xe máy.",
+            "Tôi đi đến trường bằng xê máy.",
+            "Tôi đi đến trương bằng xe máy.",
+            "Tôi đi đến trường băng xe máy."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 88.163583,
+        "end": 90.653583,
+        "correctAnswer": "Cuối tuần, anh ấy đến nhà thầy giáo chơi.",
+        "translation": "周末他去老师家玩。",
+        "options": [
+            "Cuối tuần, anh ấy đến nhà thầy giáo chơi.",
+            "Cuối tuần, anh ấy đến nhá thầy giáo chơi.",
+            "Cuối tuần, anh ấy đến nhà thầy dáo chơi.",
+            "Cuối tuần, anh ấy đến nhà thay giáo chơi."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 91.203583,
+        "end": 94.063583,
+        "correctAnswer": "Chúng tôi đi tới nhà ga mua vé.",
+        "translation": "我们去车站买票。",
+        "options": [
+            "Chúng tôi đi tới nhà ga mua vé.",
+            "Chúng tôi đi tới nhà gà mua vé.",
+            "Chúng tôi đi tới nhà ga mua vẽ.",
+            "Chúng tôi đi tơi nhà ga mua vé."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 94.553583,
+        "end": 96.533583,
+        "correctAnswer": "Tôi gửi hồ sơ xin học tới văn phòng khoa.",
+        "translation": "我把入学申请资料寄到系办公室。",
+        "options": [
+            "Tôi gửi hồ sơ xin học tới văn phòng khoa.",
+            "Tôi gửi hồ sơ xinh học tới văn phòng khoa.",
+            "Tôi gửi hồ sơ xin học tới văn phòng khoá.",
+            "Tôi gởi hồ sơ xin học tới văn phòng khoa."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 97.133583,
+        "end": 99.463583,
+        "correctAnswer": "Cô ấy tới bệnh viện khám bệnh.",
+        "translation": "她去医院看病。",
+        "options": [
+            "Cô ấy tới bệnh viện khám bệnh.",
+            "Cô ấy tới bện viện khám bệnh.",
+            "Cô ấy tới bệnh viên khám bệnh.",
+            "Cô ấy tới bệnh viện khắm bệnh."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 100.003583,
+        "end": 102.063583,
+        "correctAnswer": "Anh ấy đọc sách tới lúc ngủ quên.",
+        "translation": "他读书直到睡着。",
+        "options": [
+            "Anh ấy đọc sách tới lúc ngũ quên.",
+            "Anh ấy đọc sách tới lúc ngủ quên.",
+            "Anh ấy đọc sánh tới lúc ngủ quên.",
+            "Anh ấy đọc sách tới lúc ngũ quen."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 102.653583,
+        "end": 104.483583,
+        "correctAnswer": "Tôi chạy đến khi không còn sức.",
+        "translation": "我一直跑到精疲力尽。",
+        "options": [
+            "Tôi chạy đến khi không còn súc.",
+            "Tôi chay đến khi không còn sức.",
+            "Tôi chạy đến khi không còn sức.",
+            "Tôi chạy đến khí không còn sức."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 105.103583,
+        "end": 107.343583,
+        "correctAnswer": "Tôi làm việc đến khuya.",
+        "translation": "我工作到深夜。",
+        "options": [
+            "Tôi làm việc đến khuya.",
+            "Tôi làm việt đến khuya.",
+            "Tôi làm việc đến khuỵa.",
+            "Tôi làm việc đền khuya."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 107.973583,
+        "end": 110.823583,
+        "correctAnswer": "Cô ấy học tới khuya mỗi ngày.",
+        "translation": "她每天学习到深夜。",
+        "options": [
+            "Cô ấy học tới khuya mỗi ngày.",
+            "Cô ấy học tới khuỵa mỗi ngày.",
+            "Cô ấy học tới khuya mỗi ngài.",
+            "Cô ấy họp tới khuya mỗi ngày."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 111.343583,
+        "end": 114.393583,
+        "correctAnswer": "Trời nhiều mây, hẳn là sắp mưa.",
+        "translation": "天空多云，肯定快下雨了。",
+        "options": [
+            "Trời nhiều mây, hẳn là sắp mưa.",
+            "Trời nhiều mây, hẳn là sắp múa.",
+            "Trời nhiều may, hẳn là sắp mưa.",
+            "Trời nhiều mây, hẫn là sắp mưa."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 115.073583,
+        "end": 118.233583,
+        "correctAnswer": "Anh ấy vắng mặt, hẳn là có việc bận.",
+        "translation": "他缺席，肯定是有事忙。",
+        "options": [
+            "Anh ấy vắng mặt, hẳn là có việc bận.",
+            "Anh ấy vắng mạt, hẳn là có việc bận.",
+            "Anh ấy vắng mặt, hẳn là có việt bận.",
+            "Anh ấy vắng mặt, hẵn là có việc bận."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 118.853583,
+        "end": 122.103583,
+        "correctAnswer": "Đèn vẫn sáng, hẳn là có người ở nhà.",
+        "translation": "灯还亮着，肯定家里有人。",
+        "options": [
+            "Đèn vẫn sáng, hẳn là có người ở nhà.",
+            "Đèn vẫn sáng, hẵn là có người ở nhà.",
+            "Đèn vẫn sáng, hẳn là có người ở nha.",
+            "Đèn vẩn sáng, hẳn là có người ở nhà."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 122.703583,
+        "end": 125.903583,
+        "correctAnswer": "Nó không trả lời, hẳn là chưa đọc tin nhắn.",
+        "translation": "它没回复，肯定还没看短信。",
+        "options": [
+            "Nó không trả lời, hẳn là chưa đọc tin nhắn.",
+            "Nó không trả lời, hẵn là chưa đọc tin nhén.",
+            "Nó không trả lời, hẳn là chưa độc tin nhắn.",
+            "Nó không trả lời, hẳn là chưa độc tin nhén."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 126.463583,
+        "end": 129.513583,
+        "correctAnswer": "Họ đi sớm vậy, hẳn là có lịch quan trọng.",
+        "translation": "他们这么早出发，肯定有重要的安排。",
+        "options": [
+            "Họ đi sớm vậy, hẳn là có lịch quan trọng.",
+            "Họ đi sớm vạy, hẳn là có lịch quan trọng.",
+            "Họ đi sớm vậy, hẵn là có lịch quan trọng.",
+            "Họ đi sớm vậy, hẳn là có lịc quan trọng."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 130.063583,
+        "end": 133.333583,
+        "correctAnswer": "Giá tăng mạnh, hẳn là nhu cầu cao.",
+        "translation": "价格上涨厉害，肯定是需求高。",
+        "options": [
+            "Giá tăng mạnh, hẳn là nhu cầu cao.",
+            "Giá tăng mạnh, hẳn là nhu cào cao.",
+            "Giá tăng mảnh, hẳn là nhu cầu cao.",
+            "Giá tăng mạnh, hẵn là nhu cầu cao."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 133.863583,
+        "end": 137.003583,
+        "correctAnswer": "Trời lạnh quá, hẳn là mùa đông đến rồi.",
+        "translation": "天气这么冷，肯定是冬天来了。",
+        "options": [
+            "Trời lạnh quá, hẳn là mùa đông đến rồi.",
+            "Trời lạnh quá, hẳn là mùa đong đến rồi.",
+            "Trời lạnh quá, hẳn là mùa đông đến rùi.",
+            "Trời lạnh quá, hẵn là mùa đông đến rồi."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 137.843583,
+        "end": 140.613583,
+        "correctAnswer": "Cô giáo đến muộn, hẳn là gặp tắc đường.",
+        "translation": "老师迟到了，肯定是遇到堵车了。",
+        "options": [
+            "Cô giáo đến muộn, hẳn là gặp tắc đường.",
+            "Cô giáo đến muộn, hẵn là gặp tắc đường.",
+            "Cô giáo đến muộn, hẳn là gặp tắt đường.",
+            "Cô giáo đến muộn, hẳn là gập tắc đường."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 141.123583,
+        "end": 144.303583,
+        "correctAnswer": "Theo tôi, kế hoạch này rất hợp lý.",
+        "translation": "依我看，这个计划很合理。",
+        "options": [
+            "Theo tôi, kế hoạch này rất hợp lý.",
+            "Theo tôi, kế hoạch này rất hợ lý.",
+            "Thep tôi, kế hoạt này rất hạp lý.",
+            "Theo tôi, kế hoạt này rất hợp lý."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 144.753583,
+        "end": 147.823583,
+        "correctAnswer": "Theo anh Nam, chúng ta nên bắt đầu sớm.",
+        "translation": "据南先生说，我们应该早点开始。",
+        "options": [
+            "Theo anh Nam, chúng ta nên bát đầu sớm.",
+            "Theo anh Nam, chúng ta nên bắt đầu sớm.",
+            "Theo anh Nam, chúng ta nên bắt đầu sỡm.",
+            "Theo anh Nam, chúng ta nên bắt đâu sớm."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 148.493583,
+        "end": 152.483583,
+        "correctAnswer": "Theo quy định, học sinh phải mặc đồng phục.",
+        "translation": "按规定，学生必须穿校服。",
+        "options": [
+            "Theo quy định, học sinh phải mặc đồng phục.",
+            "Thep quy định, học sinh phải mặc đồng phục.",
+            "Theo quy định, học sinh phải mặc đông phục.",
+            "Theo quy định, học sinh phải mạc đồng phục."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 153.143583,
+        "end": 156.923583,
+        "correctAnswer": "Theo lịch trình, chúng ta sẽ nghỉ trưa lúc 12 giờ.",
+        "translation": "根据日程安排，我们中午12点休息。",
+        "options": [
+            "Theo lịch trình, chúng ta sẽ nghỉ trưa lúc 12 giờ.",
+            "Theo lịch trình, chúng ta sẽ nghĩ trưa lúc 12 giờ.",
+            "Theo lịch trình, chúng ta sẽ nghỉ trưa lúc 12 dờ.",
+            "Theo lịch trình, chúng ta sẽ nghỉ trưa lúc mười hai giờ."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 157.543583,
+        "end": 160.693583,
+        "correctAnswer": "Theo ý kiến của nhóm, cần thêm thời gian chuẩn bị.",
+        "translation": "根据小组意见，需要更多准备时间。",
+        "options": [
+            "Theo ý kiến của nhóm, cần thêm thời gian chuẩn bị.",
+            "Theo ý kiến của nhóm, cần thêm thời gian chuẩn bì.",
+            "Theo ý kiến của nhóm, cần them thời gian chuẩn bị.",
+            "Theo ý kiến của nhóm, cần thêm thời jan chuẩn bị."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 161.273583,
+        "end": 162.853583,
+        "correctAnswer": "Theo thông báo, tuần sau sẽ tổ chức thi.",
+        "translation": "根据通知，下周将举行考试。",
+        "options": [
+            "Theo thông báo, tuần sau sẽ tổ chức thi.",
+            "Theo thông báo, tuân sau sẽ tổ chức thi.",
+            "Theo thông báo, tuần sau sẽ tổ chứt thi.",
+            "Theo thông báo, tuần sau sẽ tổ chực thi."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 163.193583,
+        "end": 165.553583,
+        "correctAnswer": "Theo dự báo thời tiết, hôm nay có thể sẽ có mưa.",
+        "translation": "根据天气预报，今天可能会下雨。",
+        "options": [
+            "Theo dự báo thời tiết, hôm nay có thể sẽ có mưa.",
+            "Theo dự báo thời tiết, hôm nay có thễ sẽ có mưa.",
+            "Theo dự báo thời tiết, hôm nay có thể sẽ có múa.",
+            "Theo dự báo thời tiết, hôm nay có thể sẽ có mứa."
+        ]
+    },
+    {
+        "audioFile": "audio.mp3",
+        "start": 166.173583,
+        "end": 170.313583,
+        "correctAnswer": "Theo kết quả khảo sát, đa số người dân đều hài lòng.",
+        "translation": "根据调查结果，大多数民众都感到满意。",
+        "options": [
+            "Theo kết quả khảo sát, đa số người dân đều hài lòng.",
+            "Theo kết quả khảo sạt, đa số người dân đều hài lòng.",
+            "Theo kết quả khảo sát, đa số người dân đều hai lòng.",
+            "Theo kết quả khảo sát, đa số người dân đều hài lồng."
+        ]
+    }
+];
+
+        let currentIndex = 0;
+        let isFreeMode = true;
+        let correctCount = 0;
+        let isPlaying = false;
+        let correctSentences = new Set();
+        let wrongSentences = new Set();
+        let autoContinue = false;
+        let showAnswer = false;
+        let userAnswers = [];
+
+        // Fisher-Yates shuffle algorithm
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function init() {
+            updateSentenceDisplay();
+        }
+
+        function updateSentenceDisplay() {
+            sentenceNumber.value = currentIndex + 1;
+            indicator.style.background = '#ffffe0';
+            if (isFreeMode && showAnswer) {
+                indicator.innerHTML = `
+                    <div style="font-size: 20px; font-weight: normal; color: #38761d;">${sentences[currentIndex].translation}</div>
+                `;
+            } else {
+                indicator.innerHTML = '';
+            }
+            updateOptions();
+            if (!isFreeMode) updateScore();
+        }
+
+        function updateOptions() {
+            optionsContainer.innerHTML = '';
+            const shuffledOptions = shuffleArray(sentences[currentIndex].options);
+            shuffledOptions.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'optionBtn';
+                btn.textContent = option;
+                btn.onclick = () => checkAnswer(option);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function playCurrentSentence() {
+            if (isPlaying) audio.pause();
+            buttons.forEach(btn => btn.classList.add('disabled'));
+            sentenceNumber.disabled = true;
+            isPlaying = true;
+            audio.src = sentences[currentIndex].audioFile;
+            audio.currentTime = sentences[currentIndex].start;
+            audio.play().catch(error => {
+                console.error('Audio playback failed:', error);
+                alert('Vui lòng nhấn nút “再听一遍” để phát âm thanh.');
+                buttons.forEach(btn => btn.classList.remove('disabled'));
+                sentenceNumber.disabled = false;
+                isPlaying = false;
+            });
+
+            audio.ontimeupdate = () => {
+                if (audio.currentTime >= sentences[currentIndex].end) {
+                    audio.pause();
+                    audio.ontimeupdate = null;
+                    buttons.forEach(btn => btn.classList.remove('disabled'));
+                    sentenceNumber.disabled = false;
+                    isPlaying = false;
+                }
+            };
+        }
+
+        function moveSentence(direction) {
+            currentIndex = (currentIndex + direction + sentences.length) % sentences.length;
+            updateSentenceDisplay();
+            playCurrentSentence();
+        }
+
+        function checkAnswer(selectedAnswer) {
+            const correctAnswer = sentences[currentIndex].correctAnswer;
+            const optionButtons = optionsContainer.getElementsByClassName('optionBtn');
+            
+            // Clear previous styles
+            for (let btn of optionButtons) {
+                btn.classList.remove('correct', 'wrong');
+                btn.disabled = !isFreeMode; // Only disable buttons in Test Mode
+            }
+
+            // Find and style the selected button
+            for (let btn of optionButtons) {
+                if (btn.textContent === selectedAnswer) {
+                    if (selectedAnswer === correctAnswer) {
+                        indicator.style.background = '#B7D7AA';
+                        btn.classList.add('correct');
+                        correctAudio.play().catch(error => {
+                            console.error('Correct audio playback failed:', error);
+                        });
+                    } else {
+                        indicator.style.background = '#CE6D5E';
+                        btn.classList.add('wrong');
+                        wrongAudio.play().catch(error => {
+                            console.error('Wrong audio playback failed:', error);
+                        });
+                    }
+                }
+            }
+
+            if (!isFreeMode) {
+                userAnswers[currentIndex] = selectedAnswer;
+                if (selectedAnswer === correctAnswer && !correctSentences.has(currentIndex)) {
+                    correctCount++;
+                    correctSentences.add(currentIndex);
+                    wrongSentences.delete(currentIndex);
+                } else if (selectedAnswer !== correctAnswer && !correctSentences.has(currentIndex)) {
+                    wrongSentences.add(currentIndex);
+                }
+                updateScore();
+
+                // Auto-move to next sentence in Test Mode
+                const audioToWait = (selectedAnswer === correctAnswer) ? correctAudio : wrongAudio;
+                audioToWait.onended = () => {
+                    if (userAnswers.length === sentences.length) {
+                        showResults();
+                    } else {
+                        setTimeout(() => {
+                            moveSentence(1);
+                        }, 200);
+                    }
+                };
+            } else if (isFreeMode && autoContinue && selectedAnswer === correctAnswer) {
+                // Auto-move in Free Mode only if answer is correct and autoContinue is enabled
+                correctAudio.onended = () => {
+                    setTimeout(() => {
+                        moveSentence(1);
+                    }, 200);
+                };
+            } else {
+                correctAudio.onended = null;
+                wrongAudio.onended = null;
+            }
+        }
+
+        function updateScore() {
+            scoreDisplay.textContent = `${correctCount}/${sentences.length}`;
+            scoreDisplay.style.display = 'block'; // Hiển thị score trong Test Mode
+        }
+
+        function showResults() {
+            let resultText = `练习完成！\n正确答案数量：${correctCount}/${sentences.length}\n正确率：${((correctCount / sentences.length) * 100).toFixed(2)}%\n错误题目：`;
+            wrongSentences.forEach(index => {
+                resultText += `\n第${index + 1}题：\n你的选择：${userAnswers[index] || '未选择'}\n正确答案：${sentences[index].correctAnswer}\n`;
+            });
+            if (wrongSentences.size === 0) {
+                resultText += '\n全部正确！';
+            }
+            resultsDisplay.textContent = resultText;
+            resultsDisplay.style.display = 'block';
+        }
+
+        prevBtn.onclick = () => {
+            moveSentence(-1);
+        };
+
+        nextBtn.onclick = () => {
+            moveSentence(1);
+        };
+
+        replayBtn.onclick = () => {
+            playCurrentSentence();
+        };
+
+        freeModeBtn.onclick = () => {
+            isFreeMode = true;
+            freeModeBtn.classList.add('active-mode');
+            testModeBtn.classList.remove('active-mode');
+            autoContinueBtn.disabled = false;
+            autoContinueBtn.classList.remove('disabled');
+            showHideBtn.disabled = false;
+            showHideBtn.classList.remove('disabled');
+            scoreDisplay.style.display = 'none';
+            wrongSentencesDisplay.style.display = 'none';
+            resultsDisplay.style.display = 'none';
+            updateSentenceDisplay();
+        };
+
+        testModeBtn.onclick = () => {
+            isFreeMode = false;
+            testModeBtn.classList.add('active-mode');
+            freeModeBtn.classList.remove('active-mode');
+            autoContinueBtn.disabled = true;
+            autoContinueBtn.classList.add('disabled');
+            showHideBtn.disabled = true;
+            showHideBtn.classList.add('disabled');
+            showHideBtn.classList.remove('active-mode');
+            showAnswer = false;
+            scoreDisplay.style.display = 'block';
+            currentIndex = 0;
+            correctCount = 0;
+            correctSentences.clear();
+            wrongSentences.clear();
+            userAnswers = [];
+            for (let i = 0; i < sentences.length; i++) {
+                wrongSentences.add(i);
+            }
+            updateSentenceDisplay();
+        };
+
+        autoContinueBtn.onclick = () => {
+            if (isFreeMode) {
+                autoContinue = !autoContinue;
+                autoContinueBtn.classList.toggle('active-mode');
+                if (!autoContinue) {
+                    correctAudio.onended = null;
+                }
+            }
+        };
+
+        showHideBtn.onclick = () => {
+            if (isFreeMode) {
+                showAnswer = !showAnswer;
+                showHideBtn.classList.toggle('active-mode');
+                updateSentenceDisplay();
+            }
+        };
+
+        sentenceNumber.onchange = () => {
+            if (!isPlaying) {
+                const num = parseInt(sentenceNumber.value) - 1;
+                if (!isNaN(num) && num >= 0 && num < sentences.length) {
+                    currentIndex = num;
+                    updateSentenceDisplay();
+                    playCurrentSentence();
+                } else {
+                    alert(`输入范围： 1 到 ${sentences.length}`);
+                    updateSentenceDisplay();
+                }
+            }
+        };
+
+        sentenceNumber.onkeydown = (e) => {
+            if (!isPlaying) {
+                if (e.key === 'ArrowLeft') {
+                    moveSentence(-1);
+                }
+                if (e.key === 'ArrowRight') {
+                    moveSentence(1);
+                }
+            }
+        };
+
+        init();
+    </script>
+</body>
+</html>
